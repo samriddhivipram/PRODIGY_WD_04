@@ -1,0 +1,35 @@
+const apiKey = '6cf649b75edc7eff129deca96dd91155'; // Replace 'YOUR_API_KEY' with your OpenWeatherMap API key
+
+async function getWeather() {
+    const locationInput = document.getElementById('location').value.trim();
+    const weatherInfoDiv = document.getElementById('weather-info');
+
+    if (locationInput === '') {
+        weatherInfoDiv.innerHTML = 'Please enter a location.';
+        return;
+    }
+
+    try {
+        const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${locationInput}&appid=${apiKey}&units=metric`);
+        const data = await response.json();
+
+        if (data.cod === '404') {
+            weatherInfoDiv.innerHTML = 'Location not found. Please enter a valid location.';
+        } else {
+            const weatherDescription = data.weather[0].description;
+            const temperature = data.main.temp;
+            const humidity = data.main.humidity;
+            const windSpeed = data.wind.speed;
+
+            weatherInfoDiv.innerHTML = `
+                <p><strong>Weather:</strong> ${weatherDescription}</p>
+                <p><strong>Temperature:</strong> ${temperature}°C</p>
+                <p><strong>Humidity:</strong> ${humidity}%</p>
+                <p><strong>Wind Speed:</strong> ${windSpeed} m/s</p>
+            `;
+        }
+    } catch (error) {
+        console.error('Error fetching weather data:', error);
+        weatherInfoDiv.innerHTML = 'An error occurred. Please try again later.';
+    }
+}
